@@ -1,7 +1,12 @@
 package com.company;
 
+import javax.swing.*;
+import java.lang.annotation.Target;
+import java.lang.invoke.TypeDescriptor;
+import java.math.BigInteger;
 import java.util.Arrays;
 
+import static com.company.Checker.input;
 import static com.company.Checker.print;
 import static com.company.Utility.*;
 
@@ -10,9 +15,9 @@ public class Main {
     public static void main(String[] args) throws MatrixException {
         // 2
         printNumberOfTusk(2);
-        Matrix m1 = new Matrix(3, 4);
+        Matrix<Integer> m1 = new Matrix<>(Integer.class,3, 4);
 
-        Matrix m2 = new Matrix(m1);
+        Matrix<Integer> m2 = new Matrix<>(m1);
         // copying empty matrix 3 * 4
 
         // 3
@@ -40,7 +45,7 @@ public class Main {
         // 6
         printNumberOfTusk(6);
 
-        m2 = new Matrix(m1);
+        m2 = new Matrix<>(m1);
         print(m2.hashCode()+"");
         print(m1.hashCode()+"");
         print(m1.equals(m2)+"");
@@ -59,7 +64,7 @@ public class Main {
 
         // 7
         printNumberOfTusk(7);
-        MatrixUM m3 = new MatrixUM(3,2,"rand");
+        MatrixUM<Integer> m3 = new MatrixUM<>(m2);
 
         print(m1.toString());
         print(m3.toString());
@@ -72,7 +77,7 @@ public class Main {
         // 1 var4
         printNumberOfTusk("1 var 4");
         print("OneColumn random");
-        Matrix m6 = Matrix.createOneColumnRandom(10);
+        Matrix<Integer> m6 = Matrix.createOneColumnRandom(Integer.class,10);
         print(m6.toString());
 
 
@@ -83,11 +88,9 @@ public class Main {
         print("Transposed matrix by m1");
         print(m1.transposed().toString());
 
-        printNumberOfTusk("2 var 4");
-        print("Matrix m1");
-        print(m3.toString());
-        print("Transposed matrix by m1");
-        print(m3.transposed().toString());
+
+
+
 
     }
 

@@ -1,16 +1,24 @@
 package com.company;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class Matrix implements MatrixInt {
+import java.lang.reflect.Array;
+
+
+public class Matrix<T extends Number> implements MatrixInt {
 
     protected final int rows;
     protected final int columns;
-    protected int[][] matrix;
-    private ArrayList<Integer> matrix2;
+    protected T[][] matrixgeneric;
     private final int CONST_RANDOM = 99;
+
+    private Class<? extends T> cls;
+
+@Override
+    public Class<? extends T> getCls() {
+        return cls;
+    }
 
     /****************** 1 ******************/
 
@@ -30,14 +38,19 @@ public class Matrix implements MatrixInt {
 
 
     /****************** 2 ******************/
-    public Matrix() {
+    public Matrix(Class<? extends T> cls) {
+        this.cls = cls;
+
+
         this.rows    = 0;
         this.columns = 0;
-        this.matrix  = new int[rows][columns];
+        this.matrixgeneric  = (T[][]) Array.newInstance(cls, rows, columns);
     }
     // пустая матрица (2)
 
-    public Matrix(int rows, int columns) throws MatrixException {
+    public Matrix(Class<? extends T> cls, int rows, int columns) throws MatrixException {
+        this.cls = cls;
+
 
         if(rows <= 0 || columns <= 0) {
             throw new MatrixException("Заданы неверные размеры матрицы");
@@ -45,17 +58,20 @@ public class Matrix implements MatrixInt {
 
         this.rows    = rows;
         this.columns = columns;
-        this.matrix  = new int[rows][columns];
+        this.matrixgeneric  = (T[][]) Array.newInstance(cls, rows, columns);
     }
     // матрица по столбцам и колонкам (2)
 
-    public Matrix(Matrix name){
+    public Matrix(Matrix<T> name){
+        cls = name.getCls();
+
         columns = name.columns;
         rows = name.rows;
-        this.matrix = new int[rows][columns];
+        matrixgeneric  = (T[][]) Array.newInstance(cls, rows, columns);
+
         for(int i=0; i<rows; i++) {
             for(int j=0; j<columns; j++) {
-                matrix[i][j] = name.matrix[i][j];
+                matrixgeneric[i][j] = name.matrixgeneric[i][j];
             }
         }
     }
@@ -68,34 +84,39 @@ public class Matrix implements MatrixInt {
 
         for(int i = 0; i < rows; i++) {
             for(int j = 0; j < columns; j++) {
-                matrix[i][j] = (int) (Math.random()*CONST_RANDOM);
+                if (cls.equals(Integer.class)){
+                    matrixgeneric[i][j] = cls.cast((int) (Math.random() * CONST_RANDOM));
+                }
+                else{
+                    matrixgeneric[i][j] = cls.cast(Math.random()*CONST_RANDOM);
+                }
             }
         }
     }
     // рандомное заполнение матрицы
 
-    public void fillElement(int position_y,int position_x, int value) {
-        this.matrix[position_y][position_x] = value;
+    public void fillElement(int position_y,int position_x, T value) {
+        this.matrixgeneric[position_y][position_x] = cls.cast(value);
     }
     // заполнение элемента матрицы
 
     /****************** 4 ******************/
-@Override
-    public int getElement(int i, int j) {
-        return matrix[i][j];
+
+    public T getElement(int i, int j) {
+        return matrixgeneric[i][j];
     }
 
     // получаем елемент (4)
 
-    public int[] getRow(int n){
-        return matrix[n];
+    public T[] getRow(int n){
+        return matrixgeneric[n];
     }
     // получаем строку (4)
 
-    public int[] getColumn(int n){
-        int [] column = new int[rows];
+    public T[] getColumn(int n){
+        T[] column = (T[]) Array.newInstance(cls,rows);
         for(int i = 0; i < rows; i++) {
-            column[i] = matrix[i][n];
+            column[i] = matrixgeneric[i][n];
         }
         return column;
     }
@@ -126,26 +147,26 @@ public class Matrix implements MatrixInt {
         if (!(o instanceof Matrix m)) {
             return false;
         }
-        return Arrays.deepEquals(matrix, m.matrix) && m.rows == rows && m.columns == columns;
+        return Arrays.deepEquals(matrixgeneric, m.matrixgeneric) && m.rows == rows && m.columns == columns;
     }
     @Override
     public int hashCode(){
-        return Objects.hash(rows, columns, Arrays.deepHashCode(matrix));
+        return Objects.hash(rows, columns, Arrays.deepHashCode(matrixgeneric));
     }
 
     public Matrix transposed() throws MatrixException {
-        int newRows = getRows();
-        int newColumns = getColumns();
+        int newRows = getColumns();
+        int newColumns = getRows();
 
-        Matrix newMatrix = new Matrix(newColumns,newRows);
+        Matrix<T> newMatrix = new Matrix<>(cls,newRows,newColumns);
         for (int j = 0; j < getColumns(); j++) {
-            newMatrix.matrix[j] =  getColumn(j);
+            newMatrix.matrixgeneric[j] = getColumn(j);
         }
         return newMatrix;
     }
 
-    public static Matrix createOneColumnRandom(int elem) throws MatrixException {
-        Matrix m = new Matrix(elem,1);
+    public static <T extends Number> Matrix<T> createOneColumnRandom(Class<? extends T> cls,int elem) throws MatrixException {
+        Matrix<T> m = new Matrix<>(cls,elem,1);
         m.randomFill();
         return m;
     }
