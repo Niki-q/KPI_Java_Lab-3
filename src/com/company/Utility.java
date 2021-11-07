@@ -1,7 +1,5 @@
 package com.company;
 
-import static com.company.Checker.*;
-
 public class Utility {
     static void printDelimiter(int format){
         if (format == 1)
@@ -18,5 +16,8 @@ public class Utility {
         printDelimiter(0);
         print(task);
         printDelimiter(0);
+    }
+    static void print(String s){
+        System.out.println(s);
     }
 }
